@@ -1,62 +1,55 @@
 import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
+import { useDispatch } from 'react-redux'
+import { getArgumentFromHash } from './utils';
 
 import config from './config/config';
 import './App.css';
 
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 
-
-
-
-
-const hash: any = window.location.hash
-  .substring(1)
-  .split("&")
-  .reduce((initial: any, item: any) => {
-    if (item) {
-      var parts = item.split("=");
-      initial[parts[0]] = decodeURIComponent(parts[1]);
-    }
-    return initial;
-  }, {});
-
-window.location.hash = "";
+import { tokenRefreshed } from './redux/spotify/actions';
 
 const App: React.FC = () => {
 
+  const dispatch = useDispatch()
+
   const [token, setToken] = useState("");
+  const isTokenExpired = useSelector((state: any) => state.spotify.tokenExpired);
 
   useEffect(() => {
 
-    console.log(hash);
+    const localStoragedToken = localStorage.getItem("token");
+    let token: string = "";
 
-
-    let _token = hash.access_token;
-
-    console.log("token", _token);
-
-
-    if (_token) {
-
-
-      axios.get("https://api.spotify.com/v1/me/player", { headers: { Authorization: "Bearer " + _token } }).then((response: any) => {
-        console.log(response.data);
-      })
-        .catch((error) => {
-          console.log('error 3 ' + error);
-        });
-
-      // fetch("https://randomuser.me/api/?format=json&results=10")
-      //   .then(res => res.json())
-      //   // .then(json => setContacts(json.results));
-      //   .then(json => console.log(json.results));
+    // check if there is token already in localstorage
+    if (localStoragedToken && localStoragedToken !== "undefined") {
+      token = localStoragedToken!;
     }
-  }, []);
+    // if no - try to achieve this from url
+    else {
+      const hash: any = getArgumentFromHash();
+      window.location.hash = "";
+      localStorage.setItem('token', hash.access_token || "");
+    }
+
+    // if token is available
+    if (token) {
+      dispatch(() => tokenRefreshed());
+      axios.defaults.headers.common = { 'Authorization': `Bearer ${token}` }
+      //here dispatch get songs
+    }
+    setToken(token);
+
+  }, [isTokenExpired]);
 
   return (
     <body>
       <main>
+
+
+        <button onClick={() => dispatch({ type: 'moodify/TOKEN_EXPIRED' })}
+        >expire token</button>
         {token ?
 
           <span>{token}</span> :
@@ -71,7 +64,7 @@ const App: React.FC = () => {
         }
 
       </main>
-    </body>
+    </body >
 
   );
 }
