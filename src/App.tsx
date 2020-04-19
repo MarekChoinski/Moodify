@@ -18,7 +18,8 @@ const mapStateToProps = (state: any) => ({
 const mapDispatchToProps = (dispatch: any) =>
   bindActionCreators(
     {
-      getSongs,
+      getSongs: () => getSongs(),
+      tokenRefreshed: () => tokenRefreshed(),
     },
     dispatch
   );
@@ -31,37 +32,32 @@ const App: React.FC<Props> = (props) => {
 
   const { isTokenExpired, getSongs } = props;
 
-  const dispatch = useDispatch()
-
   const [token, setToken] = useState("");
-  // const isTokenExpired = useSelector((state: any) => );
 
   useEffect(() => {
-
     const localStoragedToken = localStorage.getItem("token");
-    let token: string = "";
+    let _token: string = "";
 
     // check if there is token already in localstorage
-    if (localStoragedToken && localStoragedToken !== "undefined") {
-      token = localStoragedToken!;
-    }
     // if no - try to achieve this from url
-    else {
+    if (!localStoragedToken || localStoragedToken === "undefined") {
       const hash: any = getArgumentFromHash();
       window.location.hash = "";
       localStorage.setItem('token', hash.access_token || "");
     }
 
+    _token = localStoragedToken!;
+
     // if token is available
     if (token) {
       console.log("jest token i powinno pobrac piosenki");
 
-      dispatch(() => tokenRefreshed());
-      axios.defaults.headers.common = { 'Authorization': `Bearer ${token}` }
-      dispatch(() => getSongs());
+      tokenRefreshed();
+      axios.defaults.headers.common = { 'Authorization': `Bearer ${_token}` };
+      getSongs();
       //here dispatch get songs
     }
-    setToken(token);
+    setToken(_token);
 
   }, [isTokenExpired]);
 
@@ -69,8 +65,8 @@ const App: React.FC<Props> = (props) => {
     <main>
 
 
-      <button onClick={() => dispatch({ type: 'moodify/TOKEN_EXPIRED' })}
-      >expire token</button>
+      {/* <button onClick={() => dispatch({ type: 'moodify/TOKEN_EXPIRED' })}
+      >expire token</button> */}
       {token ?
 
         <span>{token}</span> :

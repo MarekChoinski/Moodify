@@ -19,7 +19,6 @@ export const tokenRefreshed = (): ITokenExpiration => ({
 export const getSongs = () => async (
     dispatch: Dispatch,
 ): Promise<void> => {
-    console.log("wxhodzi tu");
     try {
         const response = await axios.get('https://api.spotify.com/v1/me/tracks', {
             params: {
