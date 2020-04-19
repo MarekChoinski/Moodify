@@ -1,6 +1,7 @@
 import { Dispatch } from "redux";
 
 import * as types from './types';
+import axios from 'axios';
 
 
 interface ITokenExpiration {
@@ -15,22 +16,23 @@ export const tokenRefreshed = (): ITokenExpiration => ({
     type: types.TOKEN_REFRESHED,
 });
 
-export const getSongs = (
-    content: string,
-    attachedPhoto?: File,
-) => async (
-    dispatch: Dispatch<any>,
-    ): Promise<void> => {
+export const getSongs = () => async (
+    dispatch: Dispatch,
+): Promise<void> => {
+    console.log("wxhodzi tu");
+    try {
+        const response = await axios.get('https://api.spotify.com/v1/me/tracks', {
+            params: {
+                limit: 50,
+                offset: 0,
+            }
+        });
+        console.log(response);
+    } catch (error) {
+        console.error(error);
+    }
 
-        try {
-
-
-        } catch (error) {
-            // TODO here should came action with meta error
-            console.error(error);
-        }
-
-    };
+};
 
 
 export type SpotifyActionsTypes =
