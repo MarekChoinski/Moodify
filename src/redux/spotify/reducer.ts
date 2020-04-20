@@ -4,7 +4,7 @@ import { SpotifyActionsTypes } from './actions';
 
 const initialState: types.ISpotifyState = {
     isTokenExpired: false,
-    loadingSongs: false,
+    songsLoadingStatus: "waiting",
     songs: [],
 };
 
@@ -14,11 +14,12 @@ const reducer = (
 ): types.ISpotifyState => {
 
     switch (action.type) {
-        // case GET_TOKEN:
-        //     return {
-        //         ...state,
-        //         ...action.payload,
-        //     }
+        case types.GET_SONGS:
+        case types.LOADING_STATUS_CHANGE:
+            return {
+                ...state,
+                ...action.payload,
+            }
         case types.TOKEN_EXPIRED:
             return {
                 ...state,

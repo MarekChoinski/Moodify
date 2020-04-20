@@ -8,7 +8,7 @@ import './App.css';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 
-import { tokenRefreshed, getSongs } from './redux/spotify/actions';
+import { tokenRefreshed, fetchSongs } from './redux/spotify/actions';
 import { bindActionCreators } from 'redux';
 
 const mapStateToProps = (state: any) => ({
@@ -18,7 +18,7 @@ const mapStateToProps = (state: any) => ({
 const mapDispatchToProps = (dispatch: any) =>
   bindActionCreators(
     {
-      getSongs: () => getSongs(),
+      fetchSongs: () => fetchSongs(),
       tokenRefreshed: () => tokenRefreshed(),
     },
     dispatch
@@ -30,7 +30,7 @@ type Props = ReturnType<typeof mapStateToProps> &
 
 const App: React.FC<Props> = (props) => {
 
-  const { isTokenExpired, getSongs } = props;
+  const { isTokenExpired, fetchSongs } = props;
 
   const [token, setToken] = useState("");
 
@@ -51,11 +51,13 @@ const App: React.FC<Props> = (props) => {
       localStorage.setItem('token', hash.access_token || "");
     }
     _token = localStoragedToken!;
+    console.log(_token);
+
 
     // if token is available
     if (_token) {
       axios.defaults.headers.common = { 'Authorization': `Bearer ${_token}` };
-      getSongs();
+      // fetchSongs();
     }
 
     tokenRefreshed();
