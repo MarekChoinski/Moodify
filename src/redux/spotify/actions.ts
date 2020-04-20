@@ -57,7 +57,7 @@ export const fetchSongs = () => async (
         let totalAmount = 0;
         let songsDetails: types.SongInformation[] = [];
 
-        const fetchPortion = async (
+        const fetchPortionSongDetails = async (
             offset: number,
         ) => await axios.get('https://api.spotify.com/v1/me/tracks', {
             params: {
@@ -66,11 +66,11 @@ export const fetchSongs = () => async (
             }
         });
 
-        const parseTrackResponse = (response: AxiosResponse<any>) =>
+        const parseSongDetailsResponse = (response: AxiosResponse<any>) =>
             response.data.items.map((item: any) => ({
                 id: item.track.id,
                 title: item.track.name,
-                artist: item.track.artists[0],
+                artist: item.track.artists[0].name,
                 albumCover: item.track.album.images[0].url,
             }));
 
@@ -82,12 +82,12 @@ export const fetchSongs = () => async (
             return a;
         }
 
-        const firstPortion = await fetchPortion(0);
+        const firstPortion = await fetchPortionSongDetails(0);
 
         totalAmount = firstPortion.data.total;
 
         if (totalAmount <= 50) {
-            songsDetails = parseTrackResponse(firstPortion);
+            songsDetails = parseSongDetailsResponse(firstPortion);
         }
 
         else {
@@ -99,8 +99,8 @@ export const fetchSongs = () => async (
             }
 
             for (let i of indexes) {
-                const response = await fetchPortion(i);
-                const portion = parseTrackResponse(response)
+                const response = await fetchPortionSongDetails(i);
+                const portion = parseSongDetailsResponse(response);
                 songsDetails = [...songsDetails, ...portion];
             }
         }
@@ -111,13 +111,51 @@ export const fetchSongs = () => async (
 
         //splice to chunk of 100
         for (let i = 0; i < ids.length; i += 100) {
-            const element = array[i];
-
+            chunks.push(ids.slice(i, i + 100).join(','))
         }
-        console.log(ids);
+        // console.log(chunks);
 
 
-        dispatch(getSongs(songsDetails));
+
+        const fetchPortionSongMood = async (
+            ids: string,
+        ) => await axios.get('https://api.spotify.com/v1/audio-features', {
+            params: {
+                ids
+            }
+        });
+
+        let songsMood: types.SongMood[] = [];
+
+        const parseSongMoodResponse = (response: AxiosResponse<any>) =>
+            response.data.audio_features.map((item: any) => ({
+                id: item.id,
+                valence: item.valence,
+                energy: item.energy,
+                danceability: item.danceability,
+            }));
+
+        // console.log(r);
+
+        for (const chunk of chunks) {
+            const response = await fetchPortionSongMood(chunk);
+            const portion = parseSongMoodResponse(response);
+            songsMood = [...songsMood, ...portion];
+        }
+
+        console.log(songsMood);
+
+
+        const songs = songsDetails.map(itm => ({
+            ...songsMood.find((item) => (item.id === itm.id) && item),
+            ...itm
+        }));
+
+        // https://stackoverflow.com/questions/19480008/javascript-merging-objects-by-id
+
+
+
+        dispatch(getSongs(songs));
         dispatch(setStatus("loaded"));
 
     } catch (error) {
