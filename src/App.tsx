@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 
 import { tokenRefreshed, fetchSongs } from './redux/spotify/actions';
 import { bindActionCreators } from 'redux';
+import MoodSlider from './components/MoodSlider/MoodSlider';
 
 const mapStateToProps = (state: any) => ({
   isTokenExpired: state.spotify.isTokenExpired,
@@ -70,9 +71,18 @@ const App: React.FC<Props> = (props) => {
       {"token ex p + " + isTokenExpired + " token "}
       {/* <button onClick={() => dispatch({ type: 'moodify/TOKEN_EXPIRED' })}
       >expire token</button> */}
+      <br />
+      valency <br />
+      <MoodSlider /><br />
+      energy <br />
+      <MoodSlider /><br />
+      danceability <br />
+      <MoodSlider />
+
+
       {token ?
 
-        <span>{token}</span> :
+        <span></span> :
         <a
           className="btn btn--loginApp-link"
           href={`${config.authEndpoint}?client_id=${config.clientId}&redirect_uri=${config.redirectUri}&scope=${config.scopes.join(
