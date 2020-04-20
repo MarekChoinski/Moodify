@@ -3,7 +3,7 @@ import * as types from './types';
 import { SpotifyActionsTypes } from './actions';
 
 const initialState: types.ISpotifyState = {
-    tokenExpired: false,
+    isTokenExpired: false,
     loadingSongs: false,
     songs: [],
 };
@@ -22,12 +22,12 @@ const reducer = (
         case types.TOKEN_EXPIRED:
             return {
                 ...state,
-                tokenExpired: true,
+                isTokenExpired: true,
             }
         case types.TOKEN_REFRESHED:
             return {
                 ...state,
-                tokenExpired: false,
+                isTokenExpired: false,
             }
         default:
             return state;

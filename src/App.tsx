@@ -35,36 +35,37 @@ const App: React.FC<Props> = (props) => {
   const [token, setToken] = useState("");
 
   useEffect(() => {
+    console.log("test");
+
     const localStoragedToken = localStorage.getItem("token");
     let _token: string = "";
 
     // check if there is token already in localstorage
+    // and check if it isn't expired
     // if no - try to achieve this from url
-    if (!localStoragedToken || localStoragedToken === "undefined") {
+    console.log(isTokenExpired, !localStoragedToken, localStoragedToken === "undefined");
+    if (isTokenExpired || !localStoragedToken || localStoragedToken === "undefined") {
+
       const hash: any = getArgumentFromHash();
       window.location.hash = "";
       localStorage.setItem('token', hash.access_token || "");
     }
-
     _token = localStoragedToken!;
 
     // if token is available
-    if (token) {
-      console.log("jest token i powinno pobrac piosenki");
-
-      tokenRefreshed();
+    if (_token) {
       axios.defaults.headers.common = { 'Authorization': `Bearer ${_token}` };
       getSongs();
-      //here dispatch get songs
     }
+
+    tokenRefreshed();
     setToken(_token);
 
   }, [isTokenExpired]);
 
   return (
     <main>
-
-
+      {"token ex p + " + isTokenExpired + " token "}
       {/* <button onClick={() => dispatch({ type: 'moodify/TOKEN_EXPIRED' })}
       >expire token</button> */}
       {token ?
