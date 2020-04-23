@@ -16,6 +16,81 @@ export const tokenRefreshed = (): ITokenExpirationAction => ({
     type: types.TOKEN_REFRESHED,
 });
 
+interface ISetActualPlayingSongAction {
+    type: typeof types.SET_ACTUAL_SONG;
+    payload: {
+        actualSong: types.Song,
+    }
+}
+
+export const setActualPlayingSong = (song: types.Song): ISetActualPlayingSongAction => ({
+    type: types.SET_ACTUAL_SONG,
+    payload: {
+        actualSong: song,
+    }
+});
+
+//TODO is loading action
+export const playMoodSong = () => async (
+    dispatch: Dispatch,
+    getState: () => any,
+): Promise<void> => {
+    try {
+
+        console.log("wszdl");
+
+
+        const allSongs = getState().spotify.songs;
+        const valence = getState().mood.valence
+        const energy = getState().mood.energy
+        const danceability = getState().mood.danceability
+
+        console.log(allSongs.length);
+
+
+        if (!allSongs.length) return;
+
+        const distance = (song: types.Song) => {
+            return Math.sqrt(
+                Math.pow((song.valence - valence), 2) +
+                Math.pow((song.energy - energy), 2) +
+                Math.pow((song.danceability - danceability), 2)
+            );
+        };
+
+        console.log(valence,
+            energy,
+            danceability);
+
+
+
+        let nearest = allSongs.reduce((previous: types.Song, current: types.Song) =>
+            distance(previous) < distance(current) ? previous : current
+        );
+
+        console.log(nearest.valence,
+            nearest.energy,
+            nearest.danceability);
+
+        console.log(nearest, distance(nearest));
+
+
+        dispatch(setActualPlayingSong(nearest));
+
+    } catch (error) {
+        dispatch(setStatus("waiting"));
+
+        if (error.response.status === 401) {
+            dispatch(tokenExpired());
+        }
+
+        else {
+            console.log(error);
+        }
+    }
+
+};
+
 interface ILoadingStatusAction {
     type: typeof types.LOADING_STATUS_CHANGE;
     payload: {
@@ -29,8 +104,6 @@ export const setStatus = (status: types.loadingStatus): ILoadingStatusAction => 
         songsLoadingStatus: status,
     }
 });
-
-
 
 interface IGetSongsAction {
     type: typeof types.GET_SONGS;
@@ -47,7 +120,7 @@ export const getSongs = (songs: types.Song[]): IGetSongsAction => ({
 });
 
 //TODO is loading action
-export const fetchSongs = () => async (
+export const fetchSongs = (playMoodSong: () => Promise<void>) => async (
     dispatch: Dispatch,
 ): Promise<void> => {
     try {
@@ -143,20 +216,17 @@ export const fetchSongs = () => async (
             songsMood = [...songsMood, ...portion];
         }
 
-        console.log(songsMood);
-
-
-        const songs = songsDetails.map(itm => ({
+        const songs = <types.Song[]>songsDetails.map(itm => ({
             ...songsMood.find((item) => (item.id === itm.id) && item),
             ...itm
         }));
 
-        // https://stackoverflow.com/questions/19480008/javascript-merging-objects-by-id
-
-
 
         dispatch(getSongs(songs));
         dispatch(setStatus("loaded"));
+
+        playMoodSong!();
+
 
     } catch (error) {
         dispatch(setStatus("waiting"));
@@ -172,9 +242,12 @@ export const fetchSongs = () => async (
 };
 
 
+
+
 export type SpotifyActionsTypes =
     ITokenExpirationAction |
     IGetSongsAction |
-    ILoadingStatusAction;
+    ILoadingStatusAction |
+    ISetActualPlayingSongAction;
 
 

@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 
 
-const MoodSlider: React.FC = () => {
+type Props = {
+    onReleased: (v: number) => void;
+};
+
+const MoodSlider: React.FC<Props> = props => {
+
+    const { onReleased } = props;
 
     const [value, setValue] = useState("500");
 
@@ -9,13 +15,11 @@ const MoodSlider: React.FC = () => {
 
     const gripReleased = () => {
         if (previousValue !== value) {
-            console.log(previousValue, value);
-
-            // dispatch here
+            let float = Number(value) * 0.001;
+            onReleased(float);
         }
         setPreviousValue(value);
     };
-
 
     return (
         <>

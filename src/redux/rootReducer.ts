@@ -1,13 +1,11 @@
 import { combineReducers } from 'redux';
 
 import spotifyReducer from './spotify/reducer';
-
+import moodReducer from './mood/reducer';
 
 const rootReducer = combineReducers({
     spotify: spotifyReducer,
-    // game: gameReducer,
-    // auth: authReducer,
-    // ui: uiReducer
+    mood: moodReducer,
 });
 
 export default rootReducer;

@@ -1,16 +1,16 @@
 import * as types from './types';
 
-interface ISetValencyAction {
-    type: typeof types.SET_VALENCY;
+interface ISetValenceAction {
+    type: typeof types.SET_VALENCE;
     payload: {
-        valency: number,
+        valence: number,
     };
 }
 
-export const setValency = (valency: number): ISetValencyAction => ({
-    type: types.SET_VALENCY,
+export const setValency = (valence: number): ISetValenceAction => ({
+    type: types.SET_VALENCE,
     payload: {
-        valency,
+        valence,
     },
 });
 
@@ -44,7 +44,7 @@ export const setDanceability = (danceability: number): ISetDanceabilityAction =>
 
 
 export type MoodActionsTypes =
-    ISetValencyAction |
+    ISetValenceAction |
     ISetEnergyAction |
     ISetDanceabilityAction;
 

@@ -6,6 +6,7 @@ const initialState: types.ISpotifyState = {
     isTokenExpired: false,
     songsLoadingStatus: "waiting",
     songs: [],
+    actualSong: null,
 };
 
 const reducer = (
@@ -15,6 +16,7 @@ const reducer = (
 
     switch (action.type) {
         case types.GET_SONGS:
+        case types.SET_ACTUAL_SONG:
         case types.LOADING_STATUS_CHANGE:
             return {
                 ...state,
