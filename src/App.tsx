@@ -16,9 +16,11 @@ import {
 } from './redux/mood/actions';
 import { bindActionCreators } from 'redux';
 import MoodSlider from './components/MoodSlider/MoodSlider';
+import Player from './components/Player/Player';
 
 const mapStateToProps = (state: any) => ({
   isTokenExpired: state.spotify.isTokenExpired,
+  actualSong: state.spotify.actualSong,
 });
 
 const mapDispatchToProps = (dispatch: any) =>
@@ -47,6 +49,7 @@ const App: React.FC<Props> = (props) => {
     setEnergy,
     setDanceability,
     playMoodSong,
+    actualSong,
   } = props;
 
   const [token, setToken] = useState("");
@@ -113,10 +116,21 @@ const App: React.FC<Props> = (props) => {
       <MoodSlider
         onReleased={handleDanceabilityChange} />
 
+      <br />
+
+
+
 
       {token ?
 
-        <span></span> :
+        (actualSong ?
+
+          <Player
+            title={actualSong.title}
+            artist={actualSong.artist}
+            albumCover={actualSong.albumCover}
+          /> : <span></span>) :
+
         <a
           className="btn btn--loginApp-link"
           href={`${config.authEndpoint}?client_id=${config.clientId}&redirect_uri=${config.redirectUri}&scope=${config.scopes.join(
