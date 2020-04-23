@@ -3,6 +3,8 @@ import { Dispatch } from "redux";
 import * as types from './types';
 import axios, { AxiosResponse } from 'axios';
 
+import Vibrant from 'node-vibrant'
+
 
 interface ITokenExpirationAction {
     type: typeof types.TOKEN_EXPIRED | typeof types.TOKEN_REFRESHED;
@@ -74,6 +76,26 @@ export const playMoodSong = () => async (
 
         console.log(nearest, distance(nearest));
 
+
+        let palette: any = await Vibrant.from(nearest.albumCover).getPalette();
+
+
+        console.log(palette);
+
+        palette = Object.assign({},
+            ...Object.keys(palette).map(k =>
+                ({
+
+                    [k]: {
+                        r: palette[k]._rgb[0].toFixed(0),
+                        g: palette[k]._rgb[1].toFixed(0),
+                        b: palette[k]._rgb[2].toFixed(0),
+                    }
+                })
+            )
+        );
+
+        console.log(palette);
 
         dispatch(setActualPlayingSong(nearest));
 

@@ -18,7 +18,22 @@ export type SongMood = {
     danceability: number,
 };
 
-export type Song = SongInformation & SongMood;
+export type Color = {
+    r: string,
+    g: string,
+    b: string,
+};
+
+export type Song = SongInformation & SongMood & {
+    colors: {
+        "Vibrant": Color,
+        "LightVibrant": Color,
+        "DarkVibrant": Color,
+        "Muted": Color,
+        "LightMuted": Color,
+        "DarkMuted": Color,
+    }
+};
 
 export type loadingStatus = "waiting" | "loading" | "loaded";
 

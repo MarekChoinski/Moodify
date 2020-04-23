@@ -18,6 +18,7 @@ import { bindActionCreators } from 'redux';
 import MoodSlider from './components/MoodSlider/MoodSlider';
 import Player from './components/Player/Player';
 
+
 const mapStateToProps = (state: any) => ({
   isTokenExpired: state.spotify.isTokenExpired,
   actualSong: state.spotify.actualSong,
