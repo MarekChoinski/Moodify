@@ -17,6 +17,7 @@ import {
 import { bindActionCreators } from 'redux';
 import MoodSlider from './components/MoodSlider';
 import Player from './components/Player';
+import { Main, Logo } from './App.style';
 
 
 const mapStateToProps = (state: any) => ({
@@ -101,8 +102,22 @@ const App: React.FC<Props> = (props) => {
     playMoodSong();
   }, [setDanceability, playMoodSong]);
 
+  console.log(actualSong && actualSong.colors.Muted);
   return (
-    <main>
+    <Main
+      color={actualSong && actualSong.colors.Muted}
+    // color2={actualSong && actualSong.colors.DarkMuted}
+    >
+
+      <Logo
+        color1={actualSong && actualSong.colors.Vibrant}
+        color2={actualSong && actualSong.colors.DarkVibrant}
+      >
+        Moodify
+        </Logo>
+
+
+
       {"token ex p + " + isTokenExpired + " token "}
       {/* <button onClick={() => dispatch({ type: 'moodify/TOKEN_EXPIRED' })}
       >expire token</button> */}
@@ -133,19 +148,19 @@ const App: React.FC<Props> = (props) => {
       }
 
       <br />
-      valency <br />
+      {/* valency <br /> */}
       <MoodSlider
         onReleased={handleValencyChange} /><br />
-      energy <br />
+      {/* energy <br /> */}
       <MoodSlider
         onReleased={handleEnergyChange} /><br />
-      danceability <br />
+      {/* danceability <br /> */}
       <MoodSlider
         onReleased={handleDanceabilityChange} />
 
       <br />
 
-    </main>
+    </Main>
 
   );
 }
