@@ -13,6 +13,7 @@
     "@types/react-redux": "^7.1.7",
     "@types/redux": "^3.6.0",
     "@types/redux-thunk": "^2.1.0",
+    "@types/styled-components": "^5.1.0",
     "axios": "^0.19.2",
     "node-vibrant": "^3.1.5",
     "react": "^16.13.1",
@@ -20,6 +21,7 @@
     "react-redux": "^7.2.0",
     "react-scripts": "3.4.1",
     "redux-devtools-extension": "^2.13.8",
+    "styled-components": "^5.1.0",
     "typescript": "^3.7.5"
   },
   "scripts": {

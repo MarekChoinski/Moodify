@@ -18,13 +18,7 @@ export type SongMood = {
     danceability: number,
 };
 
-export type Color = {
-    r: string,
-    g: string,
-    b: string,
-};
-
-export type Song = SongInformation & SongMood & {
+export type SongColor = {
     colors: {
         "Vibrant": Color,
         "LightVibrant": Color,
@@ -35,13 +29,21 @@ export type Song = SongInformation & SongMood & {
     }
 };
 
+export type Color = {
+    r: string,
+    g: string,
+    b: string,
+};
+
+export type Song = SongInformation & SongMood;
+
 export type loadingStatus = "waiting" | "loading" | "loaded";
 
 export interface ISpotifyState {
     readonly isTokenExpired: boolean,
     readonly songsLoadingStatus: loadingStatus,
     readonly songs: Song[],
-    readonly actualSong: Song | null,
+    readonly actualSong: Song & SongColor | null,
 }
 
 

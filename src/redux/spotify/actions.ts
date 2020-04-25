@@ -21,11 +21,11 @@ export const tokenRefreshed = (): ITokenExpirationAction => ({
 interface ISetActualPlayingSongAction {
     type: typeof types.SET_ACTUAL_SONG;
     payload: {
-        actualSong: types.Song,
+        actualSong: types.Song & types.SongColor,
     }
 }
 
-export const setActualPlayingSong = (song: types.Song): ISetActualPlayingSongAction => ({
+export const setActualPlayingSong = (song: types.Song & types.SongColor): ISetActualPlayingSongAction => ({
     type: types.SET_ACTUAL_SONG,
     payload: {
         actualSong: song,
@@ -83,17 +83,24 @@ export const playMoodSong = () => async (
         console.log(palette);
 
         palette = Object.assign({},
-            ...Object.keys(palette).map(k =>
-                ({
-
-                    [k]: {
-                        r: palette[k]._rgb[0].toFixed(0),
-                        g: palette[k]._rgb[1].toFixed(0),
-                        b: palette[k]._rgb[2].toFixed(0),
-                    }
-                })
-            )
+            ...Object.keys(palette).map(k => ({
+                [k]: {
+                    r: palette[k]._rgb[0].toFixed(0),
+                    g: palette[k]._rgb[1].toFixed(0),
+                    b: palette[k]._rgb[2].toFixed(0),
+                }
+            }))
         );
+
+        nearest = {
+            ...nearest,
+            colors: palette,
+        };
+
+
+        console.log(nearest);
+
+
 
         console.log(palette);
 

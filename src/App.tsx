@@ -3,7 +3,7 @@ import { useDispatch, connect } from 'react-redux'
 import { getArgumentFromHash } from './utils';
 
 import config from './config/config';
-import './App.css';
+import './style.css';
 
 import axios from 'axios';
 import { useSelector } from 'react-redux';
@@ -15,8 +15,8 @@ import {
   setDanceability,
 } from './redux/mood/actions';
 import { bindActionCreators } from 'redux';
-import MoodSlider from './components/MoodSlider/MoodSlider';
-import Player from './components/Player/Player';
+import MoodSlider from './components/MoodSlider';
+import Player from './components/Player';
 
 
 const mapStateToProps = (state: any) => ({
@@ -106,18 +106,7 @@ const App: React.FC<Props> = (props) => {
       {"token ex p + " + isTokenExpired + " token "}
       {/* <button onClick={() => dispatch({ type: 'moodify/TOKEN_EXPIRED' })}
       >expire token</button> */}
-      <br />
-      valency <br />
-      <MoodSlider
-        onReleased={handleValencyChange} /><br />
-      energy <br />
-      <MoodSlider
-        onReleased={handleEnergyChange} /><br />
-      danceability <br />
-      <MoodSlider
-        onReleased={handleDanceabilityChange} />
 
-      <br />
 
 
 
@@ -130,6 +119,7 @@ const App: React.FC<Props> = (props) => {
             title={actualSong.title}
             artist={actualSong.artist}
             albumCover={actualSong.albumCover}
+            albumCoverColors={actualSong.colors}
           /> : <span></span>) :
 
         <a
@@ -142,7 +132,18 @@ const App: React.FC<Props> = (props) => {
             </a>
       }
 
+      <br />
+      valency <br />
+      <MoodSlider
+        onReleased={handleValencyChange} /><br />
+      energy <br />
+      <MoodSlider
+        onReleased={handleEnergyChange} /><br />
+      danceability <br />
+      <MoodSlider
+        onReleased={handleDanceabilityChange} />
 
+      <br />
 
     </main>
 
