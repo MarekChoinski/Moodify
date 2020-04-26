@@ -60,9 +60,9 @@ export const playMoodSong = () => async (
             );
         };
 
-        console.log(valence,
-            energy,
-            danceability);
+        // console.log(valence,
+        //     energy,
+        //     danceability);
 
 
 
@@ -70,17 +70,17 @@ export const playMoodSong = () => async (
             distance(previous) < distance(current) ? previous : current
         );
 
-        console.log(nearest.valence,
-            nearest.energy,
-            nearest.danceability);
+        // console.log(nearest.valence,
+        //     nearest.energy,
+        //     nearest.danceability);
 
-        console.log(nearest, distance(nearest));
+        // console.log(nearest, distance(nearest));
 
 
         let palette: any = await Vibrant.from(nearest.albumCover).getPalette();
 
 
-        console.log(palette);
+        // console.log(palette);
 
         palette = Object.assign({},
             ...Object.keys(palette).map(k => ({
@@ -105,6 +105,25 @@ export const playMoodSong = () => async (
         console.log(palette);
 
         dispatch(setActualPlayingSong(nearest));
+
+
+        console.log(nearest.id);
+
+
+        try {
+            const playSong = async (
+            ) => await axios.put('https://api.spotify.com/v1/me/player/play', {
+                uris: [`spotify:track:${nearest.id}`],
+            });
+
+            playSong();
+        } catch (error) {
+            console.log(error);
+
+        }
+
+
+
 
     } catch (error) {
         dispatch(setStatus("waiting"));
@@ -174,6 +193,7 @@ export const fetchSongs = (playMoodSong: () => Promise<void>) => async (
                 title: item.track.name,
                 artist: item.track.artists[0].name,
                 albumCover: item.track.album.images[0].url,
+                // previewUrl: item.track.preview_url,
             }));
 
         const shuffleArray = (a: any[]) => {
@@ -195,9 +215,9 @@ export const fetchSongs = (playMoodSong: () => Promise<void>) => async (
         else {
             let indexes = [...Array(Math.round(totalAmount / 50)).keys()];
 
-            if (totalAmount > 1000) { //TODO: 1000
+            if (totalAmount > 100) { //TODO: 1000
                 // get 20 random indexes
-                indexes = shuffleArray(indexes).slice(0, 20);//TODO: 20
+                indexes = shuffleArray(indexes).slice(0, 2);//TODO: 20
             }
 
             for (let i of indexes) {

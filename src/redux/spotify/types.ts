@@ -9,6 +9,7 @@ export type SongInformation = {
     title: string,
     artist: string,
     albumCover: string,
+    // previewUrl: string,
 }
 
 export type SongMood = {

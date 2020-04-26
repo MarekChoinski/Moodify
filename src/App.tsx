@@ -17,7 +17,7 @@ import {
 import { bindActionCreators } from 'redux';
 import MoodSlider from './components/MoodSlider';
 import Player from './components/Player';
-import { Main, Logo } from './App.style';
+import { Main, Logo, SpotifyButton } from './App.style';
 
 
 const mapStateToProps = (state: any) => ({
@@ -86,6 +86,17 @@ const App: React.FC<Props> = (props) => {
 
   }, [isTokenExpired]);
 
+  // useEffect(() => {
+  //   if (actualSong) {
+  //     console.log(actualSong.previewUrl);
+
+  //     let audio = new Audio(actualSong.previewUrl);
+  //     console.log(audio);
+
+  //     audio.play();
+  //   }
+  // }, [actualSong]);
+
 
   const handleValencyChange = React.useCallback((value: number) => {
     setValency(value);
@@ -105,8 +116,8 @@ const App: React.FC<Props> = (props) => {
   console.log(actualSong && actualSong.colors.Muted);
   return (
     <Main
-      color={actualSong && actualSong.colors.Muted}
-    // color2={actualSong && actualSong.colors.DarkMuted}
+      color1={actualSong && actualSong.colors.Muted}
+      color2={actualSong && actualSong.colors.DarkMuted}
     >
 
       <Logo
@@ -137,14 +148,14 @@ const App: React.FC<Props> = (props) => {
             albumCoverColors={actualSong.colors}
           /> : <span></span>) :
 
-        <a
+        <SpotifyButton
           className="btn btn--loginApp-link"
           href={`${config.authEndpoint}?client_id=${config.clientId}&redirect_uri=${config.redirectUri}&scope=${config.scopes.join(
             "%20"
           )}&response_type=token&show_dialog=true`}
         >
-          Login to Spotify
-            </a>
+          Connect with Spotify
+            </SpotifyButton >
       }
 
       <br />
