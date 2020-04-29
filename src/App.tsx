@@ -17,7 +17,7 @@ import {
 import { bindActionCreators } from 'redux';
 import MoodSlider from './components/MoodSlider';
 import Player from './components/Player';
-import { Main, Logo, SpotifyButton } from './App.style';
+import { Main, Logo, SpotifyButton, MoodLabel } from './App.style';
 
 
 const mapStateToProps = (state: any) => ({
@@ -125,28 +125,33 @@ const App: React.FC<Props> = (props) => {
         color2={actualSong && actualSong.colors.DarkVibrant}
       >
         Moodify
-        </Logo>
-
-
-
-      {"token ex p + " + isTokenExpired + " token "}
-      {/* <button onClick={() => dispatch({ type: 'moodify/TOKEN_EXPIRED' })}
-      >expire token</button> */}
-
-
-
+      </Logo>
 
 
       {token ?
 
         (actualSong ?
+          <>
+            <Player
+              title={actualSong.title}
+              artist={actualSong.artist}
+              albumCover={actualSong.albumCover}
+              albumCoverColors={actualSong.colors}
+            />
+            <br />
+            <MoodLabel> How happy are you? </MoodLabel>
+            <MoodSlider
+              onReleased={handleValencyChange} /><br />
+            <MoodLabel> Are you full of energy? </MoodLabel>
+            <MoodSlider
+              onReleased={handleEnergyChange} /><br />
+            <MoodLabel> How about dance? </MoodLabel>
+            <MoodSlider
+              onReleased={handleDanceabilityChange} />
 
-          <Player
-            title={actualSong.title}
-            artist={actualSong.artist}
-            albumCover={actualSong.albumCover}
-            albumCoverColors={actualSong.colors}
-          /> : <span></span>) :
+          </>
+          : <span></span>
+        ) :
 
         <SpotifyButton
           className="btn btn--loginApp-link"
@@ -155,21 +160,10 @@ const App: React.FC<Props> = (props) => {
           )}&response_type=token&show_dialog=true`}
         >
           Connect with Spotify
-            </SpotifyButton >
+        </SpotifyButton >
       }
 
-      <br />
-      {/* valency <br /> */}
-      <MoodSlider
-        onReleased={handleValencyChange} /><br />
-      {/* energy <br /> */}
-      <MoodSlider
-        onReleased={handleEnergyChange} /><br />
-      {/* danceability <br /> */}
-      <MoodSlider
-        onReleased={handleDanceabilityChange} />
 
-      <br />
 
     </Main>
 

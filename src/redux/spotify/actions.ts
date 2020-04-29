@@ -215,9 +215,9 @@ export const fetchSongs = (playMoodSong: () => Promise<void>) => async (
         else {
             let indexes = [...Array(Math.round(totalAmount / 50)).keys()];
 
-            if (totalAmount > 100) { //TODO: 1000
+            if (totalAmount > 1000) { //TODO: 1000
                 // get 20 random indexes
-                indexes = shuffleArray(indexes).slice(0, 2);//TODO: 20
+                indexes = shuffleArray(indexes).slice(0, 20);//TODO: 20
             }
 
             for (let i of indexes) {
