@@ -17,7 +17,7 @@ import {
 import { bindActionCreators } from 'redux';
 import MoodSlider from './components/MoodSlider';
 import Player from './components/Player';
-import { Main, Logo, SpotifyButton, MoodLabel } from './App.style';
+import { Main, Logo, SpotifyButton, MoodLabel, PlayerMoodContainer } from './App.style';
 
 
 const mapStateToProps = (state: any) => ({
@@ -131,12 +131,11 @@ const App: React.FC<Props> = (props) => {
       {token ?
 
         (actualSong ?
-          <>
+          <PlayerMoodContainer>
             <Player
               title={actualSong.title}
               artist={actualSong.artist}
               albumCover={actualSong.albumCover}
-              albumCoverColors={actualSong.colors}
             />
             <br />
             <MoodLabel> How happy are you? </MoodLabel>
@@ -149,7 +148,7 @@ const App: React.FC<Props> = (props) => {
             <MoodSlider
               onReleased={handleDanceabilityChange} />
 
-          </>
+          </PlayerMoodContainer>
           : <span></span>
         ) :
 
