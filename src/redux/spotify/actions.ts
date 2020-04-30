@@ -1,9 +1,9 @@
 import { Dispatch } from "redux";
 
 import * as types from './types';
+import * as utils from './utils';
 import axios, { AxiosResponse } from 'axios';
-
-import Vibrant from 'node-vibrant'
+import { maxSongs } from '../../config/config';
 
 
 interface ITokenExpirationAction {
@@ -47,46 +47,21 @@ export const playMoodSong = () => async (
     getState: () => any,
 ): Promise<void> => {
     try {
-
-        const allSongs = getState().spotify.songs;
-        const valence = getState().mood.valence
-        const energy = getState().mood.energy
-        const danceability = getState().mood.danceability
-
+        const allSongs: types.Song[] = getState().spotify.songs;
+        const valence: number = getState().mood.valence
+        const energy: number = getState().mood.energy
+        const danceability: number = getState().mood.danceability
 
         if (!allSongs.length) return;
 
-        const distance = (song: types.Song) => {
-            return Math.sqrt(
-                Math.pow((song.valence - valence), 2) +
-                Math.pow((song.energy - energy), 2) +
-                Math.pow((song.danceability - danceability), 2)
-            );
-        };
+        let nearest = utils.getNearestSong(allSongs, valence, energy, danceability);
+        let palette = await utils.getColorsFromAlbumCover(nearest.albumCover);
 
-        let nearest = allSongs.reduce((previous: types.Song, current: types.Song) =>
-            distance(previous) < distance(current) ? previous : current
-        );
 
-        let palette: any = await Vibrant.from(nearest.albumCover).getPalette();
-
-        palette = Object.assign({},
-            ...Object.keys(palette).map(k => ({
-                [k]: {
-                    r: palette[k]._rgb[0].toFixed(0),
-                    g: palette[k]._rgb[1].toFixed(0),
-                    b: palette[k]._rgb[2].toFixed(0),
-                }
-            }))
-        );
-
-        nearest = {
+        dispatch(setActualPlayingSong({
             ...nearest,
             colors: palette,
-        };
-
-
-        dispatch(setActualPlayingSong(nearest));
+        }));
 
         await axios.put('https://api.spotify.com/v1/me/player/play', {
             uris: [`spotify:track:${nearest.id}`],
@@ -147,55 +122,19 @@ export const fetchSongs = (playMoodSong: () => Promise<void>) => async (
 
         dispatch(setStatus("loading"));
 
-        let totalAmount = 0;
+        let totalAmount = await utils.getSongsAmount();
         let songsDetails: types.SongInformation[] = [];
 
-        const fetchPortionSongDetails = async (
-            offset: number,
-        ) => await axios.get('https://api.spotify.com/v1/me/tracks', {
-            params: {
-                offset: offset * 50,
-                limit: 50,
-            }
-        });
+        let indexes = [...Array(Math.round(totalAmount / 50)).keys()];
 
-        const parseSongDetailsResponse = (response: AxiosResponse<any>) =>
-            response.data.items.map((item: any) => ({
-                id: item.track.id,
-                title: item.track.name,
-                artist: item.track.artists[0].name,
-                albumCover: item.track.album.images[0].url,
-            }));
-
-        const shuffleArray = (a: any[]) => {
-            for (let i = a.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [a[i], a[j]] = [a[j], a[i]];
-            }
-            return a;
+        if (totalAmount > maxSongs) {
+            // get random indexes in range of max amount
+            indexes = utils.shuffleArray(indexes).slice(0, Math.round(maxSongs / 50));
         }
 
-        const firstPortion = await fetchPortionSongDetails(0);
-
-        totalAmount = firstPortion.data.total;
-
-        if (totalAmount <= 50) {
-            songsDetails = parseSongDetailsResponse(firstPortion);
-        }
-
-        else {
-            let indexes = [...Array(Math.round(totalAmount / 50)).keys()];
-
-            if (totalAmount > 100) { //TODO: 1000
-                // get 20 random indexes
-                indexes = shuffleArray(indexes).slice(0, 2);//TODO: 20
-            }
-
-            for (let i of indexes) {
-                const response = await fetchPortionSongDetails(i);
-                const portion = parseSongDetailsResponse(response);
-                songsDetails = [...songsDetails, ...portion];
-            }
+        for (let i of indexes) {
+            const portion = await utils.fetchPortionSongDetails(i);
+            songsDetails = [...songsDetails, ...portion];
         }
 
         const ids = songsDetails.map(details => details.id);
@@ -207,27 +146,10 @@ export const fetchSongs = (playMoodSong: () => Promise<void>) => async (
             chunks.push(ids.slice(i, i + 100).join(','))
         }
 
-        const fetchPortionSongMood = async (
-            ids: string,
-        ) => await axios.get('https://api.spotify.com/v1/audio-features', {
-            params: {
-                ids
-            }
-        });
-
         let songsMood: types.SongMood[] = [];
 
-        const parseSongMoodResponse = (response: AxiosResponse<any>) =>
-            response.data.audio_features.map((item: any) => ({
-                id: item.id,
-                valence: item.valence,
-                energy: item.energy,
-                danceability: item.danceability,
-            }));
-
         for (const chunk of chunks) {
-            const response = await fetchPortionSongMood(chunk);
-            const portion = parseSongMoodResponse(response);
+            const portion = await utils.fetchPortionSongMood(chunk);
             songsMood = [...songsMood, ...portion];
         }
 
@@ -235,6 +157,8 @@ export const fetchSongs = (playMoodSong: () => Promise<void>) => async (
             ...songsMood.find((item) => (item.id === itm.id) && item),
             ...itm
         }));
+
+        // TODO: here save to indexedDB
 
         dispatch(getSongs(songs));
         dispatch(setStatus("loaded"));

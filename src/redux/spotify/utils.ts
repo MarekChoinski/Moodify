@@ -3,6 +3,7 @@ import axios, {
 } from 'axios';
 
 import * as types from './types';
+import Vibrant from 'node-vibrant';
 
 export const shuffleArray = (a: number[]) => {
     for (let i = a.length - 1; i > 0; i--) {
@@ -29,7 +30,7 @@ export const getSongsAmount = async (): Promise<number> => {
 
 export const fetchPortionSongDetails = async (
     offset: number,
-): Promise<types.SongInformation> => {
+): Promise<types.SongInformation[]> => {
     try {
         const portion = await axios.get('https://api.spotify.com/v1/me/tracks', {
             params: {
@@ -47,4 +48,59 @@ export const fetchPortionSongDetails = async (
     } catch (error) {
         throw new Error(error);
     }
+};
+
+export const fetchPortionSongMood = async (
+    ids: string,
+): Promise<types.SongMood[]> => {
+    try {
+        const portion = await axios.get('https://api.spotify.com/v1/audio-features', {
+            params: {
+                ids
+            }
+        });
+
+        return portion.data.audio_features.map((item: any) => ({
+            id: item.id,
+            valence: item.valence,
+            energy: item.energy,
+            danceability: item.danceability,
+        }));
+    } catch (error) {
+        throw new Error(error);
+    }
+};
+
+export const getNearestSong = (
+    allSongs: types.Song[],
+    valence: number,
+    energy: number,
+    danceability: number,
+): types.Song => {
+    const distance = (song: types.Song) => {
+        return Math.sqrt(
+            Math.pow((song.valence - valence), 2) +
+            Math.pow((song.energy - energy), 2) +
+            Math.pow((song.danceability - danceability), 2)
+        );
+    };
+
+    return allSongs.reduce((previous: types.Song, current: types.Song) =>
+        distance(previous) < distance(current) ? previous : current
+    );
+
+};
+
+export const getColorsFromAlbumCover = async (albumCover: string) => {
+    let palette: any = await Vibrant.from(albumCover).getPalette();
+
+    return Object.assign({},
+        ...Object.keys(palette).map(k => ({
+            [k]: {
+                r: palette[k]._rgb[0].toFixed(0),
+                g: palette[k]._rgb[1].toFixed(0),
+                b: palette[k]._rgb[2].toFixed(0),
+            }
+        }))
+    );
 }
