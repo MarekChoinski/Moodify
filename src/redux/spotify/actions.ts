@@ -18,6 +18,15 @@ export const tokenRefreshed = (): ITokenExpirationAction => ({
     type: types.TOKEN_REFRESHED,
 });
 
+interface INoActivePlayer {
+    type: typeof types.NO_ACTIVE_PLAYER;
+}
+
+export const noActivePlayer = (): INoActivePlayer => ({
+    type: types.NO_ACTIVE_PLAYER,
+});
+
+
 interface ISetActualPlayingSongAction {
     type: typeof types.SET_ACTUAL_SONG;
     payload: {
@@ -39,15 +48,10 @@ export const playMoodSong = () => async (
 ): Promise<void> => {
     try {
 
-        console.log("wszdl");
-
-
         const allSongs = getState().spotify.songs;
         const valence = getState().mood.valence
         const energy = getState().mood.energy
         const danceability = getState().mood.danceability
-
-        console.log(allSongs.length);
 
 
         if (!allSongs.length) return;
@@ -60,27 +64,11 @@ export const playMoodSong = () => async (
             );
         };
 
-        // console.log(valence,
-        //     energy,
-        //     danceability);
-
-
-
         let nearest = allSongs.reduce((previous: types.Song, current: types.Song) =>
             distance(previous) < distance(current) ? previous : current
         );
 
-        // console.log(nearest.valence,
-        //     nearest.energy,
-        //     nearest.danceability);
-
-        // console.log(nearest, distance(nearest));
-
-
         let palette: any = await Vibrant.from(nearest.albumCover).getPalette();
-
-
-        // console.log(palette);
 
         palette = Object.assign({},
             ...Object.keys(palette).map(k => ({
@@ -98,38 +86,22 @@ export const playMoodSong = () => async (
         };
 
 
-        console.log(nearest);
-
-
-
-        console.log(palette);
-
         dispatch(setActualPlayingSong(nearest));
 
-
-        console.log(nearest.id);
-
-
-        try {
-            const playSong = async (
-            ) => await axios.put('https://api.spotify.com/v1/me/player/play', {
-                uris: [`spotify:track:${nearest.id}`],
-            });
-
-            playSong();
-        } catch (error) {
-            console.log(error);
-
-        }
-
-
+        await axios.put('https://api.spotify.com/v1/me/player/play', {
+            uris: [`spotify:track:${nearest.id}`],
+        });
 
 
     } catch (error) {
         dispatch(setStatus("waiting"));
 
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
             dispatch(tokenExpired());
+        }
+
+        if (error.message.includes("404")) {
+            dispatch(noActivePlayer());
         }
 
         else {
@@ -193,7 +165,6 @@ export const fetchSongs = (playMoodSong: () => Promise<void>) => async (
                 title: item.track.name,
                 artist: item.track.artists[0].name,
                 albumCover: item.track.album.images[0].url,
-                // previewUrl: item.track.preview_url,
             }));
 
         const shuffleArray = (a: any[]) => {
@@ -215,9 +186,9 @@ export const fetchSongs = (playMoodSong: () => Promise<void>) => async (
         else {
             let indexes = [...Array(Math.round(totalAmount / 50)).keys()];
 
-            if (totalAmount > 1000) { //TODO: 1000
+            if (totalAmount > 100) { //TODO: 1000
                 // get 20 random indexes
-                indexes = shuffleArray(indexes).slice(0, 20);//TODO: 20
+                indexes = shuffleArray(indexes).slice(0, 2);//TODO: 20
             }
 
             for (let i of indexes) {
@@ -235,9 +206,6 @@ export const fetchSongs = (playMoodSong: () => Promise<void>) => async (
         for (let i = 0; i < ids.length; i += 100) {
             chunks.push(ids.slice(i, i + 100).join(','))
         }
-        // console.log(chunks);
-
-
 
         const fetchPortionSongMood = async (
             ids: string,
@@ -257,8 +225,6 @@ export const fetchSongs = (playMoodSong: () => Promise<void>) => async (
                 danceability: item.danceability,
             }));
 
-        // console.log(r);
-
         for (const chunk of chunks) {
             const response = await fetchPortionSongMood(chunk);
             const portion = parseSongMoodResponse(response);
@@ -270,12 +236,10 @@ export const fetchSongs = (playMoodSong: () => Promise<void>) => async (
             ...itm
         }));
 
-
         dispatch(getSongs(songs));
         dispatch(setStatus("loaded"));
 
         playMoodSong!();
-
 
     } catch (error) {
         dispatch(setStatus("waiting"));
@@ -290,11 +254,9 @@ export const fetchSongs = (playMoodSong: () => Promise<void>) => async (
 
 };
 
-
-
-
 export type SpotifyActionsTypes =
     ITokenExpirationAction |
+    INoActivePlayer |
     IGetSongsAction |
     ILoadingStatusAction |
     ISetActualPlayingSongAction;

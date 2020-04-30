@@ -6,7 +6,6 @@ import config from './config/config';
 import './style.css';
 
 import axios from 'axios';
-import { useSelector } from 'react-redux';
 
 import { tokenRefreshed, fetchSongs, playMoodSong } from './redux/spotify/actions';
 import {
@@ -17,7 +16,7 @@ import {
 import { bindActionCreators } from 'redux';
 import MoodSlider from './components/MoodSlider';
 import Player from './components/Player';
-import { Main, Logo, SpotifyButton, MoodLabel, PlayerMoodContainer } from './App.style';
+import { Main, Logo, SpotifyButton, MoodLabel, PlayerMoodContainer, LoadingSongs } from './App.style';
 
 
 const mapStateToProps = (state: any) => ({
@@ -39,8 +38,7 @@ const mapDispatchToProps = (dispatch: any) =>
   );
 
 type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> &
-{};
+  ReturnType<typeof mapDispatchToProps>;
 
 const App: React.FC<Props> = (props) => {
 
@@ -86,17 +84,6 @@ const App: React.FC<Props> = (props) => {
 
   }, [isTokenExpired]);
 
-  // useEffect(() => {
-  //   if (actualSong) {
-  //     console.log(actualSong.previewUrl);
-
-  //     let audio = new Audio(actualSong.previewUrl);
-  //     console.log(audio);
-
-  //     audio.play();
-  //   }
-  // }, [actualSong]);
-
 
   const handleValencyChange = React.useCallback((value: number) => {
     setValency(value);
@@ -113,20 +100,17 @@ const App: React.FC<Props> = (props) => {
     playMoodSong();
   }, [setDanceability, playMoodSong]);
 
-  console.log(actualSong && actualSong.colors.Muted);
   return (
     <Main
       color1={actualSong && actualSong.colors.Muted}
       color2={actualSong && actualSong.colors.DarkMuted}
     >
-
       <Logo
         color1={actualSong && actualSong.colors.Vibrant}
         color2={actualSong && actualSong.colors.DarkVibrant}
       >
         Moodify
       </Logo>
-
 
       {token ?
 
@@ -137,19 +121,18 @@ const App: React.FC<Props> = (props) => {
               artist={actualSong.artist}
               albumCover={actualSong.albumCover}
             />
-            <br />
             <MoodLabel> How happy are you? </MoodLabel>
             <MoodSlider
-              onReleased={handleValencyChange} /><br />
+              onReleased={handleValencyChange} />
             <MoodLabel> Are you full of energy? </MoodLabel>
             <MoodSlider
-              onReleased={handleEnergyChange} /><br />
+              onReleased={handleEnergyChange} />
             <MoodLabel> How about dance? </MoodLabel>
             <MoodSlider
               onReleased={handleDanceabilityChange} />
 
-          </PlayerMoodContainer>
-          : <span></span>
+          </PlayerMoodContainer> :
+          <LoadingSongs>Loading songs from your Spotify...</LoadingSongs>
         ) :
 
         <SpotifyButton
@@ -162,10 +145,7 @@ const App: React.FC<Props> = (props) => {
         </SpotifyButton >
       }
 
-
-
     </Main>
-
   );
 }
 
