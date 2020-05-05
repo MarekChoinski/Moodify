@@ -4,6 +4,7 @@ import * as types from './types';
 import * as utils from './utils';
 import axios, { AxiosResponse } from 'axios';
 import { maxSongs } from '../../config/config';
+import localforage from "localforage";
 
 
 interface ITokenExpirationAction {
@@ -51,10 +52,17 @@ export const playMoodSong = () => async (
     getState: () => any,
 ): Promise<void> => {
     try {
-        const allSongs: types.Song[] = getState().spotify.songs;
+        console.log("weszlo");
+
+
+        const allSongs: types.Song[] = [];
         const valence: number = getState().mood.valence
         const energy: number = getState().mood.energy
         const danceability: number = getState().mood.danceability
+
+        await localforage.iterate((value: types.Song) => {
+            allSongs.push(value);
+        });
 
         if (!allSongs.length) return;
 
@@ -129,48 +137,56 @@ export const fetchSongs = (playMoodSong: () => Promise<void>) => async (
 
         dispatch(setStatus("loading"));
 
-        let totalAmount = await utils.getSongsAmount();
-        let songsDetails: types.SongInformation[] = [];
+        let len = await localforage.length();
+        console.log(len, " localforage.length()");
 
-        let indexes = [...Array(Math.round(totalAmount / 50)).keys()];
+        // let isSaved = await utils.songsSavedToIndexedDB
 
-        if (totalAmount > maxSongs) {
-            // get random indexes in range of max amount
-            indexes = utils.shuffleArray(indexes).slice(0, Math.round(maxSongs / 50));
+        if (!len) {
+            let totalAmount = await utils.getSongsAmount();
+            let songsDetails: types.SongInformation[] = [];
+
+            let indexes = [...Array(Math.round(totalAmount / 50)).keys()];
+
+            if (totalAmount > maxSongs) {
+                // get random indexes in range of max amount
+                indexes = utils.shuffleArray(indexes).slice(0, Math.round(maxSongs / 50));
+            }
+
+            for (let i of indexes) {
+                const portion = await utils.fetchPortionSongDetails(i);
+                songsDetails = [...songsDetails, ...portion];
+            }
+
+            const ids = songsDetails.map(details => details.id);
+
+            let chunks: string[] = [];
+
+            //splice to chunk of 100
+            for (let i = 0; i < ids.length; i += 100) {
+                chunks.push(ids.slice(i, i + 100).join(','))
+            }
+
+            let songsMood: types.SongMood[] = [];
+
+            for (const chunk of chunks) {
+                const portion = await utils.fetchPortionSongMood(chunk);
+                songsMood = [...songsMood, ...portion];
+            }
+
+            const songs = <types.Song[]>songsDetails.map(itm => ({
+                ...songsMood.find((item) => (item.id === itm.id) && item),
+                ...itm
+            }));
+
+            await utils.saveSongsToIndexedDb(songs);
         }
 
-        for (let i of indexes) {
-            const portion = await utils.fetchPortionSongDetails(i);
-            songsDetails = [...songsDetails, ...portion];
-        }
+        // dispatch(getSongs(songs));
 
-        const ids = songsDetails.map(details => details.id);
-
-        let chunks: string[] = [];
-
-        //splice to chunk of 100
-        for (let i = 0; i < ids.length; i += 100) {
-            chunks.push(ids.slice(i, i + 100).join(','))
-        }
-
-        let songsMood: types.SongMood[] = [];
-
-        for (const chunk of chunks) {
-            const portion = await utils.fetchPortionSongMood(chunk);
-            songsMood = [...songsMood, ...portion];
-        }
-
-        const songs = <types.Song[]>songsDetails.map(itm => ({
-            ...songsMood.find((item) => (item.id === itm.id) && item),
-            ...itm
-        }));
-
-        // TODO: here save to indexedDB
-
-        dispatch(getSongs(songs));
         dispatch(setStatus("loaded"));
 
-        playMoodSong!();
+        await playMoodSong();
 
     } catch (error) {
         dispatch(setStatus("waiting"));

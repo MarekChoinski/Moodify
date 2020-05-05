@@ -5,6 +5,8 @@ import axios, {
 import * as types from './types';
 import Vibrant from 'node-vibrant';
 
+import localforage from 'localforage';
+
 export const shuffleArray = (a: number[]) => {
     for (let i = a.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -104,3 +106,26 @@ export const getColorsFromAlbumCover = async (albumCover: string) => {
         }))
     );
 }
+
+export const saveSongsToIndexedDb = async (allSongs: types.Song[]): Promise<void> => {
+    try {
+        //await localforage.clear(); //TODO not neccesary tbh
+        for (const song of allSongs) {
+            await localforage.setItem(song.id, song);
+        }
+    } catch (error) {
+        throw new Error(error);
+    }
+};
+
+//TODO dont work
+export const songsSavedToIndexedDB = async (): Promise<boolean> => {
+    try {
+        let len = await localforage.length();
+        console.log(len, " localforage.length()");
+
+        return !!len;
+    } catch (error) {
+        throw new Error(error);
+    }
+};
