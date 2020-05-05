@@ -17,10 +17,12 @@ import { bindActionCreators } from 'redux';
 import MoodSlider from './components/MoodSlider';
 import Player from './components/Player';
 import { Main, Logo, SpotifyButton, MoodLabel, PlayerMoodContainer, LoadingSongs } from './App.style';
+import NoActivePlayerWarning from './components/NoActivePlayerWarning';
 
 
 const mapStateToProps = (state: any) => ({
   isTokenExpired: state.spotify.isTokenExpired,
+  isSpotifyPlayerActive: state.spotify.isSpotifyPlayerActive,
   actualSong: state.spotify.actualSong,
 });
 
@@ -44,6 +46,7 @@ const App: React.FC<Props> = (props) => {
 
   const {
     isTokenExpired,
+    isSpotifyPlayerActive,
     fetchSongs,
     setValency,
     setEnergy,
@@ -116,6 +119,13 @@ const App: React.FC<Props> = (props) => {
 
         (actualSong ?
           <PlayerMoodContainer>
+
+            {!isSpotifyPlayerActive &&
+              <NoActivePlayerWarning
+                onClick={() => playMoodSong()}
+              />
+            }
+
             <Player
               title={actualSong.title}
               artist={actualSong.artist}

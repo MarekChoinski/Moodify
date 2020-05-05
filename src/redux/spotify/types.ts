@@ -1,5 +1,6 @@
 export const TOKEN_EXPIRED = "moodify/TOKEN_EXPIRED";
 export const TOKEN_REFRESHED = "moodify/TOKEN_REFRESHED";
+export const IS_ACTIVE_PLAYER = "moodify/IS_ACTIVE_PLAYER";
 export const NO_ACTIVE_PLAYER = "moodify/NO_ACTIVE_PLAYER";
 export const GET_SONGS = "moodify/GET_SONGS";
 export const LOADING_STATUS_CHANGE = "moodify/LOADING_STATUS_CHANGE";
@@ -45,4 +46,5 @@ export interface ISpotifyState {
     readonly songsLoadingStatus: loadingStatus,
     readonly songs: Song[],
     readonly actualSong: Song & SongColor | null,
+    readonly isSpotifyPlayerActive: boolean,
 }

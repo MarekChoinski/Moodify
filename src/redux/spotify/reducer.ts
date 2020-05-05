@@ -7,6 +7,7 @@ const initialState: types.ISpotifyState = {
     songsLoadingStatus: "waiting",
     songs: [],
     actualSong: null,
+    isSpotifyPlayerActive: false,
 };
 
 const reducer = (
@@ -31,6 +32,16 @@ const reducer = (
             return {
                 ...state,
                 isTokenExpired: false,
+            }
+        case types.IS_ACTIVE_PLAYER:
+            return {
+                ...state,
+                isSpotifyPlayerActive: true,
+            }
+        case types.NO_ACTIVE_PLAYER:
+            return {
+                ...state,
+                isSpotifyPlayerActive: false,
             }
         default:
             return state;

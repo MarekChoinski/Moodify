@@ -18,12 +18,16 @@ export const tokenRefreshed = (): ITokenExpirationAction => ({
     type: types.TOKEN_REFRESHED,
 });
 
-interface INoActivePlayer {
-    type: typeof types.NO_ACTIVE_PLAYER;
+interface IPlayerActive {
+    type: typeof types.NO_ACTIVE_PLAYER | typeof types.IS_ACTIVE_PLAYER;
 }
 
-export const noActivePlayer = (): INoActivePlayer => ({
+export const noActivePlayer = (): IPlayerActive => ({
     type: types.NO_ACTIVE_PLAYER,
+});
+
+export const isActivePlayer = (): IPlayerActive => ({
+    type: types.IS_ACTIVE_PLAYER,
 });
 
 
@@ -67,11 +71,14 @@ export const playMoodSong = () => async (
             uris: [`spotify:track:${nearest.id}`],
         });
 
+        // player is active and successfully plays song
+        dispatch(isActivePlayer());
 
     } catch (error) {
         dispatch(setStatus("waiting"));
 
-        if (error.response && error.response.status === 401) {
+        if (error.message.includes("401") ||
+            (error.response && error.response.status === 401)) {
             dispatch(tokenExpired());
         }
 
@@ -167,7 +174,9 @@ export const fetchSongs = (playMoodSong: () => Promise<void>) => async (
 
     } catch (error) {
         dispatch(setStatus("waiting"));
-        if (error.response.status === 401) {
+
+        if (error.message.includes("401") ||
+            (error.response && error.response.status === 401)) {
             dispatch(tokenExpired());
         }
 
@@ -180,7 +189,7 @@ export const fetchSongs = (playMoodSong: () => Promise<void>) => async (
 
 export type SpotifyActionsTypes =
     ITokenExpirationAction |
-    INoActivePlayer |
+    IPlayerActive |
     IGetSongsAction |
     ILoadingStatusAction |
     ISetActualPlayingSongAction;
