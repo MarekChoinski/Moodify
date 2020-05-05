@@ -41,6 +41,9 @@ export const Main = styled("main") <IGradientBackground>`
                 rgb(41,41,41),
                 black)`)};
 
+
+
+
     background-size: 500% 500%;
     animation: ${gradient} 60s ease-in-out infinite;
 
@@ -94,12 +97,17 @@ export const MoodLabel = styled.p`
 	width: 500px;
 	font-weight: bold;
 	padding: 0;
-	margin: 10px 0 0 0;
+    margin: 10px 0 0 0; 
 `;
 
-export const PlayerMoodContainer = styled.h2`
+interface IBlurrable {
+    blurred: boolean,
+}
+
+export const PlayerMoodContainer = styled("div") <IBlurrable>`
     max-width: 500px;
     width: 100%;
+    ${props => props.blurred ? "filter: blur(10px)" : ""};
 `;
 
 export const LoadingSongs = styled.span`

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
     WarningContainer,
     WarningTitle,
@@ -26,7 +26,6 @@ const NoActivePlayerWarning: React.FC<Props> = props => {
                 Refresh
             </WarningButton>
         </WarningContainer>
-
     );
 };
 

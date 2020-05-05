@@ -89,18 +89,24 @@ const App: React.FC<Props> = (props) => {
 
 
   const handleValencyChange = React.useCallback((value: number) => {
+
     setValency(value);
     playMoodSong();
+
   }, [setValency, playMoodSong]);
 
   const handleEnergyChange = React.useCallback((value: number) => {
+
     setEnergy(value);
     playMoodSong();
+
   }, [setEnergy, playMoodSong]);
 
   const handleDanceabilityChange = React.useCallback((value: number) => {
+
     setDanceability(value);
     playMoodSong();
+
   }, [setDanceability, playMoodSong]);
 
   return (
@@ -115,17 +121,16 @@ const App: React.FC<Props> = (props) => {
         Moodify
       </Logo>
 
+      {!isSpotifyPlayerActive && token &&
+        <NoActivePlayerWarning
+          onClick={() => playMoodSong()}
+        />
+      }
+
       {token ?
 
         (actualSong ?
-          <PlayerMoodContainer>
-
-            {!isSpotifyPlayerActive &&
-              <NoActivePlayerWarning
-                onClick={() => playMoodSong()}
-              />
-            }
-
+          <PlayerMoodContainer blurred={!isSpotifyPlayerActive as boolean}>
             <Player
               title={actualSong.title}
               artist={actualSong.artist}

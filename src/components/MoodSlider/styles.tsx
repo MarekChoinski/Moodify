@@ -6,7 +6,7 @@ export const RangeSlider = styled.input`
         width: 100%;
         margin: 5.6px 0;
         background: transparent;
-        
+      
         &:focus {
             outline: none;
         }
