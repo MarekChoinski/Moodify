@@ -7,14 +7,19 @@ import Vibrant from 'node-vibrant';
 
 import localforage from 'localforage';
 
-export const shuffleArray = (a: number[]) => {
-    for (let i = a.length - 1; i > 0; i--) {
+
+//tested
+export const shuffleArray = (array: number[]) => {
+    let shuffled = [...array];
+
+    for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
-    return a;
+    return shuffled;
 }
 
+//tested
 export const getSongsAmount = async (): Promise<number> => {
     try {
         const portion = await axios.get('https://api.spotify.com/v1/me/tracks', {
@@ -30,47 +35,73 @@ export const getSongsAmount = async (): Promise<number> => {
     }
 }
 
+//tested
 export const fetchPortionSongDetails = async (
     offset: number,
 ): Promise<types.SongInformation[]> => {
-    try {
-        const portion = await axios.get('https://api.spotify.com/v1/me/tracks', {
-            params: {
-                offset: offset * 50,
-                limit: 50, // max limit according to spotify documentation
-            }
-        });
+    const portion = await axios.get('https://api.spotify.com/v1/me/tracks', {
+        params: {
+            offset: offset * 50,
+            limit: 50, // max limit according to spotify documentation
+        }
+    });
 
-        return portion.data.items.map((item: any) => ({
-            id: item.track.id,
-            title: item.track.name,
-            artist: item.track.artists[0].name,
-            albumCover: item.track.album.images[0].url,
-        }));
-    } catch (error) {
-        throw new Error(error);
-    }
+    return portion.data.items.map((item: any) => ({
+        id: item.track.id,
+        title: item.track.name,
+        artist: item.track.artists[0].name,
+        albumCover: item.track.album.images[0].url,
+    }));
 };
 
+//tested
 export const fetchPortionSongMood = async (
     ids: string,
 ): Promise<types.SongMood[]> => {
-    try {
-        const portion = await axios.get('https://api.spotify.com/v1/audio-features', {
-            params: {
-                ids
-            }
-        });
+    const portion = await axios.get('https://api.spotify.com/v1/audio-features', {
+        params: {
+            ids
+        }
+    });
 
-        return portion.data.audio_features.map((item: any) => ({
-            id: item.id,
-            valence: item.valence,
-            energy: item.energy,
-            danceability: item.danceability,
-        }));
-    } catch (error) {
-        throw new Error(error);
+    return portion.data.audio_features.map((item: any) => ({
+        id: item.id,
+        valence: item.valence,
+        energy: item.energy,
+        danceability: item.danceability,
+    }));
+};
+
+//testing
+export const getColorsFromAlbumCover = async (albumCover: string) => {
+    let palette: any = await Vibrant.from(albumCover).getPalette();
+
+    // return palette;
+
+    return Object.assign({},
+        ...Object.keys(palette).map(k => ({
+            [k]: {
+                r: palette[k]._rgb[0].toFixed(0),
+                g: palette[k]._rgb[1].toFixed(0),
+                b: palette[k]._rgb[2].toFixed(0),
+            }
+        }))
+    );
+}
+
+export const saveSongsToIndexedDb = async (allSongs: types.Song[]): Promise<void> => {
+    //await localforage.clear(); //TODO not neccesary tbh
+    for (const song of allSongs) {
+        await localforage.setItem(song.id, song);
     }
+};
+
+//TODO dont work
+export const songsSavedToIndexedDB = async (): Promise<boolean> => {
+    let len = await localforage.length();
+    console.log(len, " localforage.length()");
+
+    return !!len;
 };
 
 export const getNearestSong = (
@@ -91,41 +122,4 @@ export const getNearestSong = (
         distance(previous) < distance(current) ? previous : current
     );
 
-};
-
-export const getColorsFromAlbumCover = async (albumCover: string) => {
-    let palette: any = await Vibrant.from(albumCover).getPalette();
-
-    return Object.assign({},
-        ...Object.keys(palette).map(k => ({
-            [k]: {
-                r: palette[k]._rgb[0].toFixed(0),
-                g: palette[k]._rgb[1].toFixed(0),
-                b: palette[k]._rgb[2].toFixed(0),
-            }
-        }))
-    );
-}
-
-export const saveSongsToIndexedDb = async (allSongs: types.Song[]): Promise<void> => {
-    try {
-        //await localforage.clear(); //TODO not neccesary tbh
-        for (const song of allSongs) {
-            await localforage.setItem(song.id, song);
-        }
-    } catch (error) {
-        throw new Error(error);
-    }
-};
-
-//TODO dont work
-export const songsSavedToIndexedDB = async (): Promise<boolean> => {
-    try {
-        let len = await localforage.length();
-        console.log(len, " localforage.length()");
-
-        return !!len;
-    } catch (error) {
-        throw new Error(error);
-    }
 };

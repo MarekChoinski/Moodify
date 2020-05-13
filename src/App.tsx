@@ -14,7 +14,7 @@ import {
   setDanceability,
 } from './redux/mood/actions';
 import { bindActionCreators } from 'redux';
-import MoodSlider from './components/MoodSlider';
+import MoodSlider from './components/MoodSlider/MoodSlider';
 import Player from './components/Player';
 import { Main, Logo, SpotifyButton, MoodLabel, PlayerMoodContainer, LoadingSongs } from './App.style';
 import NoActivePlayerWarning from './components/NoActivePlayerWarning';
