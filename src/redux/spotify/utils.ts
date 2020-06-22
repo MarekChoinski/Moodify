@@ -1,6 +1,4 @@
-import axios, {
-    AxiosResponse
-} from 'axios';
+import axios from 'axios';
 
 import * as types from './types';
 import Vibrant from 'node-vibrant';

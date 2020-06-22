@@ -1,8 +1,7 @@
 export default {
     authEndpoint: 'https://accounts.spotify.com/authorize',
     clientId: "056a2f6da4284c55980882095f831b4d",
-    redirectUri: "https://clever-sammet-231c42.netlify.app/",
-    // redirectUri: "http://localhost:3000/",
+    redirectUri: process.env.NODE_ENV !== "production" ? "http://localhost:3000/": "https://moodify.marekchoinski.com/",
     scopes: [
         "user-library-read",
         "user-modify-playback-state",

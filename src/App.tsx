@@ -1,5 +1,5 @@
-import React, { useState, useEffect, Dispatch } from 'react';
-import { useDispatch, connect } from 'react-redux'
+import React, { useState, useEffect} from 'react';
+import { connect } from 'react-redux'
 import { getArgumentFromHash } from './utils';
 
 import config from './config/config';
@@ -85,7 +85,7 @@ const App: React.FC<Props> = (props) => {
     tokenRefreshed();
     setToken(_token);
 
-  }, [isTokenExpired]);
+  }, [isTokenExpired, fetchSongs, playMoodSong]);
 
 
   const handleValencyChange = React.useCallback((value: number) => {

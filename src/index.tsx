@@ -5,17 +5,13 @@ import * as serviceWorker from './serviceWorker';
 import thunk from 'redux-thunk';
 import { createStore, applyMiddleware } from 'redux';
 import rootReducer from './redux/rootReducer';
-import { Provider, useSelector } from 'react-redux';
+import { Provider,} from 'react-redux';
 import { composeWithDevTools } from "redux-devtools-extension"
-
 
 // const store = createStore(rootReducer, applyMiddleware(thunk));
 const store = createStore(rootReducer, (process.env.NODE_ENV !== "production") ?
   composeWithDevTools(applyMiddleware(thunk))
   : applyMiddleware(thunk));
-
-
-
 
 ReactDOM.render(
   <React.StrictMode>

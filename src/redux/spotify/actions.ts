@@ -2,7 +2,7 @@ import { Dispatch } from "redux";
 
 import * as types from './types';
 import * as utils from './utils';
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import { maxSongs } from '../../config/config';
 import localforage from "localforage";
 
@@ -174,7 +174,7 @@ export const fetchSongs = (playMoodSong: () => Promise<void>) => async (
                 songsMood = [...songsMood, ...portion];
             }
 
-            const songs = <types.Song[]>songsDetails.map(itm => ({
+            const songs = (songsDetails as types.Song[]).map(itm => ({
                 ...songsMood.find((item) => (item.id === itm.id) && item),
                 ...itm
             }));
