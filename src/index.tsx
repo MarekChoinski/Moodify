@@ -7,6 +7,7 @@ import { createStore, applyMiddleware } from 'redux';
 import rootReducer from './redux/rootReducer';
 import { Provider,} from 'react-redux';
 import { composeWithDevTools } from "redux-devtools-extension"
+import Head from './components/Head/Head';
 
 // const store = createStore(rootReducer, applyMiddleware(thunk));
 const store = createStore(rootReducer, (process.env.NODE_ENV !== "production") ?
@@ -16,6 +17,7 @@ const store = createStore(rootReducer, (process.env.NODE_ENV !== "production") ?
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
+      <Head />
       <App />
     </Provider>
   </React.StrictMode>,
