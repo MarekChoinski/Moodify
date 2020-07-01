@@ -5,7 +5,7 @@ The **Progressive Web App** written in **React** adjusts song choice depending o
 
 [![Dependabot badge](https://flat.badgen.net/dependabot/wbkd/webpack-starter?icon=dependabot)](https://dependabot.com/)
 
-![screenshot](https://i.imgur.com/tdzmgnl.png)
+![screenshot](https://i.imgur.com/dXm7Y2D.png)
 
 
 </div>
@@ -13,10 +13,10 @@ The **Progressive Web App** written in **React** adjusts song choice depending o
 <div align="center">
   <h1>Screenshots</h1>
 
-![screenshot](https://i.imgur.com/lQTKaYW.png)
-![screenshot](https://i.imgur.com/9LLFN01.png)
-![screenshot](https://i.imgur.com/mc6pipK.png)
-![screenshot](https://i.imgur.com/chQ3Wbs.png)
+![screenshot](https://i.imgur.com/puvbKyJ.png)
+![screenshot](https://i.imgur.com/CsWfh8H.png)
+![screenshot](https://i.imgur.com/oD50TZC.png)
+![screenshot](https://i.imgur.com/ioAZ0lA.png
 
 </div>
 
