@@ -3,19 +3,20 @@
 
 The **Progressive Web App** written in **React** adjusts song choice depending on user mood. Animated eye-pleasant visual experience based on spotify **REST API** changes dynamically application appearance according to vibrant color of album cover using **Styled-components**. Optimal work is assured by combining **redux** with **IndexedDB**.
 
-![screenshot](https://i.imgur.com/UDBviiY.png)
-
 [![Dependabot badge](https://flat.badgen.net/dependabot/wbkd/webpack-starter?icon=dependabot)](https://dependabot.com/)
+
+![screenshot](https://i.imgur.com/tdzmgnl.png)
+
 
 </div>
 
 <div align="center">
   <h1>Screenshots</h1>
 
-![screenshot](https://i.imgur.com/brFk0wI.png)
-![screenshot](https://i.imgur.com/8p7D6lG.png)
-![screenshot](https://i.imgur.com/qqeU6rW.png)
-![screenshot](https://i.imgur.com/9SIJces.png)
+![screenshot](https://i.imgur.com/lQTKaYW.png)
+![screenshot](https://i.imgur.com/9LLFN01.png)
+![screenshot](https://i.imgur.com/mc6pipK.png)
+![screenshot](https://i.imgur.com/chQ3Wbs.png)
 
 </div>
 
