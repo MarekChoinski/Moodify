@@ -1,6 +1,6 @@
 import React from "react";
 
-import { AlbumCover, Title, Author } from './style';
+import { AlbumCover, Title, Author, PlayerWrapper } from './style';
 
 type Props = {
     title: string,
@@ -17,11 +17,11 @@ const Player: React.FC<Props> = props => {
     } = props;
 
     return (
-        <>
+        <PlayerWrapper>
             <AlbumCover src={albumCover} alt="Album cover" />
             <Title>{title}</Title>
             <Author>{artist}</Author>
-        </>
+        </PlayerWrapper>
     );
 };
 

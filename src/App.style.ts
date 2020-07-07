@@ -20,8 +20,11 @@ interface IGradientBackground {
 }
 
 export const Main = styled("main") <IGradientBackground>`
-    height: 100vh;
-    width: 100vw;
+    margin-bottom: 100px;
+    width: 100%;
+    min-height: 100vh;
+    min-width: 100vw;
+    position: absolute;
     box-sizing: border-box;
     padding: 0 70px;
     display: flex;
@@ -74,8 +77,9 @@ export const Logo = styled("h1") <IGradientBackground>`
 
     animation: ${gradient} 15s ease infinite;
 
-    @media (max-width: 740px) {
+    @media (max-width: 1150px) {
         font-size: 3.1rem;
+        margin-bottom: 2rem
     }
 `;
 
@@ -94,7 +98,6 @@ export const MoodLabel = styled.p`
 	font-size: 12px;
 	color: white;
 	opacity: 0.5;
-	width: 500px;
 	font-weight: bold;
 	padding: 0;
     margin: 10px 0 0 0; 
@@ -105,6 +108,9 @@ interface IBlurrable {
 }
 
 export const PlayerMoodContainer = styled("div") <IBlurrable>`
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 50px;
     max-width: 500px;
     width: 100%;
     ${props => props.blurred ? "filter: blur(10px)" : ""};
