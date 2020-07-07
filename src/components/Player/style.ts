@@ -12,7 +12,7 @@ export const AlbumCover = styled.img`
     width: 100%;
     height: auto;
 
-    @media (max-width: 740px) {
+    @media (max-height: 760px) {
         max-height: 40vh;
         width: auto;
         max-width: 100%;

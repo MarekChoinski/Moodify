@@ -78,7 +78,6 @@ export const Logo = styled("h1") <IGradientBackground>`
     animation: ${gradient} 15s ease infinite;
 
     @media (max-width: 1150px) {
-        font-size: 3.1rem;
         margin-bottom: 2rem
     }
 `;
