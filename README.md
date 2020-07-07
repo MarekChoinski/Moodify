@@ -16,7 +16,7 @@ The **Progressive Web App** written in **React** adjusts song choice depending o
 ![screenshot](https://i.imgur.com/puvbKyJ.png)
 ![screenshot](https://i.imgur.com/CsWfh8H.png)
 ![screenshot](https://i.imgur.com/oD50TZC.png)
-![screenshot](https://i.imgur.com/ioAZ0lA.png
+![screenshot](https://i.imgur.com/ioAZ0lA.png)
 
 </div>
 
